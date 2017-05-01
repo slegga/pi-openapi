@@ -1,0 +1,37 @@
+  {
+    "swagger": "2.0",
+    "info": { "version": "1.0", "title": "Some awesome API" },
+    "basePath": "/api",
+    "paths": {
+      "/pets": {
+        "get": {
+          "operationId": "getPets",
+          "x-mojo-name": "get_pets",
+          "x-mojo-to": "status#list",
+          "summary": "Finds pets in the system",
+          "parameters": [
+            {"in": "body", "name": "body", "schema": {"type": "object"}},
+            {"in": "query", "name": "age", "type": "integer"}
+          ],
+          "responses": {
+            "200": {
+              "description": "Pet response",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pets": {
+                    "type": "array",
+                    "items": { "type": "object" }
+                  }
+                }
+              }
+            },
+            "default": {
+              "description": "Unexpected error",
+              "schema": { "$ref": "http://git.io/vcKD4#" }
+            }
+          }
+        }
+      }
+    }
+  }
