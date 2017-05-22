@@ -18,7 +18,7 @@ my $ua = Mojo::UserAgent->new;
 #my $privkey = Net::SSLeay::PEM_read_bio_PrivateKey($bio, undef, 'password');
 #$ua->key($privkey);
 
-my $tx = $ua->post('https://hjernen.glemte.no/api/pi'=> json => {ip=>'1.2.3.4'});
+my $tx = $ua->post('https://hjernen.glemte.no/api/set_pi_ip'=> json => {ip=>'1.2.3.4'});
 
 if(my $res = $tx->success) {
   say $res->body;
