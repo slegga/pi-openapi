@@ -6,8 +6,8 @@ use warnings;
 use autodie;
 use feature 'say';
 use Data::Dumper;
-
-
+use POSIX qw (strftime);
+use Mojo::JSON qw(j);
 use Mojo::UserAgent;
 
 ###
@@ -37,7 +37,7 @@ printf j( $value_hr);
 #my $privkey = Net::SSLeay::PEM_read_bio_PrivateKey($bio, undef, 'password');
 #$ua->key($privkey);
 
-my $tx = $ua->post('https://hjernen.glemte.no/api/pi'=> json => $value_hr);
+my $tx = $ua->post('https://hjernen.glemte.no/api/pi'=> json =>  $value_hr);
 
 if(my $res = $tx->success) {
   say $res->body;
