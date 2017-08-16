@@ -5,11 +5,13 @@ use strict;
 use autodie;
 use feature 'say';
 use IO::Socket;
-Use Mojo::UserAgent;
+use Mojo::UserAgent;
+use YAML::Tiny;
+
 $| = 1;
 
 my $socket = IO::Socket::INET->new(PeerAddr => '64.137.192.243' , PeerPort => 22 , Proto => 'tcp' , Timeout => 10);
-my $cfg = eval ...;
+my $cfg = eval YAML::Tiny->read("$ENV{HOME}/etc/poll-cloud-server.yml");
 #Check connection
 if( $socket )    {
     say time . ' ok';
