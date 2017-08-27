@@ -7,20 +7,23 @@ use feature 'say';
 use IO::Socket;
 use Mojo::UserAgent;
 use YAML::Tiny;
+use Data::Dumper;
 
 $| = 1;
 
-my $cfg = eval YAML::Tiny->read("$ENV{HOME}/etc/poll-cloud-server.yml");
-my $socket = IO::Socket::INET->new(PeerAddr => $cfg->PeerAddr , PeerPort => $cfg->PeerPort , Proto => $cfg->Proto , Timeout => $cfg->Timeout);
+my $cfg = YAML::Tiny->read("$ENV{HOME}/etc/poll-cloud-server.yml")->[0]; #first element
+
+say Dumper $cfg;
+my $socket = IO::Socket::INET->new(PeerAddr => $cfg->{PeerAddr} , PeerPort => $cfg->{PeerPort} , Proto => $cfg->{Proto} , Timeout => $cfg->{Timeout});
 #Check connection
 if( $socket )    {
     say time . ' ok';
 } else {
-    say time . ' unreachable';
+    printf "%s %s '%s' %si:%s", time, 'unreachable',$@,$cfg->{PeerAddr},$cfg->{PeerPort};
    # https://github.com/cloudatcost/api
    my $ua  = Mojo::UserAgent->new;
   my $tx = $ua->post('https://panel.cloudatcost.com/api/v1/powerop.php' => form
- => {key=>$cfg->key, login=>$cfg->username, sid=>$cfg->sid, action=>'reset'});
+ => {key=>$cfg->{key}, login=>$cfg->{username}, sid=>$cfg->{sid}, action=>'reset'});
   if (my $res = $tx->success) { say $res->body }
   else {
     my $err = $tx->error;
