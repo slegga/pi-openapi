@@ -10,8 +10,8 @@ use YAML::Tiny;
 
 $| = 1;
 
-my $socket = IO::Socket::INET->new(PeerAddr => '64.137.192.243' , PeerPort => 22 , Proto => 'tcp' , Timeout => 10);
 my $cfg = eval YAML::Tiny->read("$ENV{HOME}/etc/poll-cloud-server.yml");
+my $socket = IO::Socket::INET->new(PeerAddr => $cfg->PeerAddr , PeerPort => $cfg->PeerPort , Proto => $cfg->Proto , Timeout => $cfg->Timeout);
 #Check connection
 if( $socket )    {
     say time . ' ok';
