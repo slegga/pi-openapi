@@ -41,7 +41,7 @@ my $tx = $ua->post('https://hjernen.glemte.no/api/pi'=> json =>  $value_hr);
 
 if(my $res = $tx->success) {
   say $res->body;
-  print Dumper($tx);
+#  print Dumper($tx);
 } else {
   my ($err, $code) = $tx->error;
   say $code ? "$code response: $err" : "Connection error:". Dumper $err;
