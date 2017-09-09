@@ -16,7 +16,7 @@ $| = 1;
 
 my $cfg = YAML::Tiny->read("$ENV{HOME}/etc/poll-cloud-server.yml")->[0]; #first element
 
-say Dumper $cfg;
+# say Dumper $cfg;
 my $socket = IO::Socket::INET->new(PeerAddr => $cfg->{PeerAddr} , PeerPort => $cfg->{PeerPort} , Proto => $cfg->{Proto} , Timeout => $cfg->{Timeout});
 #Check connection
 my $ok=0;
