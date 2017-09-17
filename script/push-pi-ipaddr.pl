@@ -13,7 +13,9 @@ use Mojo::UserAgent;
 ###
 my $ua = Mojo::UserAgent->new;
 $ua->max_redirects(5);
-my $value_hr = $ua->get('http://ip-api.com/json/')->res->json;
+# http://ip-api.com/json/ only show ipv4 path
+# http://v4v6.ipv6-test.com/api/myip.php?json show default address
+my $value_hr = $ua->get('http://v4v6.ipv6-test.com/api/myip.php?json')->res->json;
 
 my $uname = `uname -a`;
 my $cels;
