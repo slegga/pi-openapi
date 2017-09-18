@@ -34,17 +34,22 @@ if( $socket )    {
 } 
 
 else {
-    printf "%s ERROR: unreachable '%s' %si:%s", time,$@,$cfg->{PeerAddr},$cfg->{PeerPort};
+    printf "%s ERROR: unreachable '%s' %s:%s\n", time,$@,$cfg->{PeerAddr},$cfg->{PeerPort};
    # https://github.com/cloudatcost/api
 }
 if(! $ok ) {
    my $ua  = Mojo::UserAgent->new;
   my $tx = $ua->post('https://panel.cloudatcost.com/api/v1/powerop.php' => form
  => {key=>$cfg->{key}, login=>$cfg->{username}, sid=>$cfg->{sid}, action=>'reset'});
-  if (my $res = $tx->success) { say $res->body }
+  if (my $res = $tx->success) { 
+		printf "SUCCESS REBOOT: %s\n",$res->body; 
+	}
   else {
     my $err = $tx->error;
-    die "$err->{code} response: $err->{message}" if $err->{code};
-    die "Connection error: $err->{message}";
+		if ($err->{code}) {
+	    printf "ERROR REBOOT: %s response: %s\n",$err->{code}, $err->{message};
+		} else {
+			printf "Connection error: %s\n",($err->{message}//'NO ERROR MESSAGE OR ANY THING.');
+		}
   }
 }
