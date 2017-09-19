@@ -18,27 +18,31 @@ $ua->max_redirects(5);
 # http://v4v6.ipv6-test.com/api/myip.php?json show default address
 my $value_d_hr = $ua->get('http://v4v6.ipv6-test.com/api/myip.php?json')->res->json;
 my $value_4_hr = $ua->get('http://v4.ipv6-test.com/api/myip.php?json')->res->json;
-my $value_6_hr =  $ua->get('http://v4.ipv6-test.com/api/myip.php?json')->res->json;
+my $value_6_hr =  $ua->get('http://v6.ipv6-test.com/api/myip.php?json')->res->json;
+
+my $value_hr;
+for my $key(keys %$value_4_hr) {
+	$value_hr->{"ipv4_$key"} = $value_4_hr->{$key};
+}
+for my $key(keys %$value_6_hr) {
+	$value_hr->{"ipv6_$key"} = $value_6_hr->{$key};
+}
+$value_hr->{address} = $value_d_hr->{address};
+$value_hr->{a_proto} = $value_d_hr->{proto};
 
 my $uname = `uname -a`;
 my $cels;
 if ($uname=~/raspb/i) {
      $cels=`/opt/vc/bin/vcgencmd measure_temp`;
-  ($value_d_hr->{temp}) = ($cels=~/temp\=([\d\.\,\w\-\+]+.\w)/);
+  ($value_hr->{temp}) = ($cels=~/temp\=([\d\.\,\w\-\+]+.\w)/);
 } elsif ($uname=~/msys/i) {
     $cels='';
 } else {
     $cels =`sensors`;
-  ($value_d_hr->{temp}) = ($cels=~/temp1\:\s+([\d\.\,\w\-\+]+)/);
+  ($value_hr->{a_temp}) = ($cels=~/temp1\:\s+([\d\.\,\w\-\+]+)/);
 }
-$value_hr->{time} = strftime("%Y-%m-%d %H:%M:%S", localtime);
-my $value_hr = clone $value_d_hr;
-for my $key(keys $value_4_hr) {
-	$value_hr->{"ipv4_$key"} = $value_4_hr->{$key};
-}
-for my $key(keys $value_6_hr) {
-	$value_hr->{"ipv6_$key"} = $value_6_hr->{$key};
-}
+$value_hr->{a_time} = strftime("%Y-%m-%d %H:%M:%S", localtime);
+
 
 printf j( $value_hr);
 ###
