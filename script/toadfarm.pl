@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 use Toadfarm -init;
 use FindBin;
 BEGIN { unshift @INC, "$FindBin::Bin/../lib" }
