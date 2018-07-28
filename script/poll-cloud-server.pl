@@ -12,6 +12,12 @@ use Data::Dumper;
 # http://www.perlmonks.org/?node_id=645259
 
 
+=head1 NAME
+
+poll-cloud-serer.pl - Test status of cloud server.
+
+=cut
+
 $| = 1;
 
 my $cfg = YAML::Tiny->read("$ENV{HOME}/etc/poll-cloud-server.yml")->[0]; #first element
@@ -31,7 +37,7 @@ if( $socket )    {
 	} else {
 		say time . ' ERROR: Connected but no answear';
 	}
-} 
+}
 
 else {
     printf "%s ERROR: unreachable '%s' %s:%s\n", time,$@,$cfg->{PeerAddr},$cfg->{PeerPort};
@@ -41,8 +47,8 @@ if(! $ok ) {
    my $ua  = Mojo::UserAgent->new;
   my $tx = $ua->post('https://panel.cloudatcost.com/api/v1/powerop.php' => form
  => {key=>$cfg->{key}, login=>$cfg->{username}, sid=>$cfg->{sid}, action=>'reset'});
-  if (my $res = $tx->success) { 
-		printf "SUCCESS REBOOT: %s\n",$res->body; 
+  if (my $res = $tx->success) {
+		printf "SUCCESS REBOOT: %s\n",$res->body;
 	}
   else {
     my $err = $tx->error;
