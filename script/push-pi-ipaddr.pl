@@ -10,7 +10,7 @@ use POSIX qw (strftime);
 use Mojo::JSON qw(j);
 use Mojo::UserAgent;
 use Clone 'clone';
-
+use Socket;
 =head1 NAME
 
 push-ip-addr - Tell cloud server where which ip address the private pi server has.
@@ -35,6 +35,7 @@ for my $key(keys %$value_6_hr) {
 }
 $value_hr->{address} = $value_d_hr->{address};
 $value_hr->{a_proto} = $value_d_hr->{proto};
+$value_hr->{a_dns} = scalar gethostbyaddr(inet_aton($value_d_hr->{address}), AF_INET);
 
 my $uname = `uname -a`;
 my $cels;
