@@ -35,7 +35,7 @@ for my $key(keys %$value_6_hr) {
 }
 $value_hr->{address} = $value_d_hr->{address};
 $value_hr->{a_proto} = $value_d_hr->{proto};
-$value_hr->{a_dns} = scalar gethostbyaddr(inet_aton($value_d_hr->{address}), AF_INET);
+$value_hr->{a_dns} = scalar gethostbyaddr(inet_aton($value_hr->{ipv4_address}), AF_INET);
 
 my $uname = `uname -a`;
 my $cels;
