@@ -1,6 +1,20 @@
 package SH::PiOpenAPI::Controller::Status;
 use Mojo::Base "Mojolicious::Controller";
 
+=head1 NAME
+
+SH::PiOpenAPI::Controller::Status - Think this is not in use.
+May be in future use with getting info from hjernen.
+
+=head1 METHODS
+
+=head2 list
+
+...
+
+=cut
+
+
 sub list {
 
   # Do not continue on invalid input and render a default 400
