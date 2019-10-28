@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-tell-dropbox-my-ip.pl
+get-my-ip.pl
 
 =head1 DESCRIPTION
 
@@ -13,7 +13,6 @@ Look up ip
 http://ip-api.com/json/
 Lookup pi temparure: /opt/vc/bin/vcgencmd measure_temp
 Store date.
-Store in given catalog. Check dropbox status, dropbox start dropbox stop.
 
 
 =cut
