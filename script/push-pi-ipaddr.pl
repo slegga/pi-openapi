@@ -61,7 +61,7 @@ printf j( $value_hr);
 #my $privkey = Net::SSLeay::PEM_read_bio_PrivateKey($bio, undef, 'password');
 #$ua->key($privkey);
 
-my $tx = $ua->post('https://slegga.0x.no/api/home/pi'=> json =>  $value_hr);
+my $tx = $ua->post('https://pinao.0x.no/api/home/pi'=> json =>  $value_hr);
 
 if(my $res = $tx->success) {
   say $res->body;
