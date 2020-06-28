@@ -63,7 +63,7 @@ printf j( $value_hr);
 
 my $tx = $ua->post('https://piano.0x.no/api/home/pi'=> json =>  $value_hr);
 
-if(my $res = $tx->success) {
+if(my $res = $tx->result->is_success) {
   say $res->body;
 #  print Dumper($tx);
 } else {
