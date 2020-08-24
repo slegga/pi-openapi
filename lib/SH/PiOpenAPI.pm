@@ -5,6 +5,15 @@ use Mojo::Base "Mojolicious";
 
 Main module for export pi data module
 
+=head1 SYNOPSIS
+
+    use Mojolicious::Commands;
+    Mojolicious::Commands->start_app('SH::PIOpenAPI');
+
+=head1 DESCRIPTION
+
+Application class.
+
 =head1 METHODS
 
 =head2 startup

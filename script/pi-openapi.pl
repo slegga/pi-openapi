@@ -12,6 +12,10 @@ use Mojolicious::Commands;
 
 pi-openapi.pl - For talking with cloudatcost server.
 
+=head1 DESCRIPTION
+
+Startup script for SH::PiOpenAPI
+
 =cut
 
 # Start command line interface for application

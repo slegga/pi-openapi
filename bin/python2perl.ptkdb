@@ -1,0 +1,41 @@
+$files = {
+           '_<bin/python2perl.pl' => [
+                                       {
+                                         'type' => 'user',
+                                         'line' => '155',
+                                         'expr' => undef,
+                                         'fname' => 'bin/python2perl.pl',
+                                         'text' => '    my ($self, $expression) = @_;
+',
+                                         'value' => '1'
+                                       }
+                                     ]
+         };
+$expr_list = [
+               {
+                 'depth' => -1,
+                 'expr' => '@_'
+               },
+               {
+                 'depth' => -1,
+                 'expr' => '$1'
+               },
+               {
+                 'depth' => -1,
+                 'expr' => '$2'
+               },
+               {
+                 'depth' => -1,
+                 'expr' => '$_'
+               },
+               {
+                 'expr' => '$expression',
+                 'depth' => -1
+               },
+               {
+                 'expr' => '$return',
+                 'depth' => -1
+               }
+             ];
+$eval_saved_text = undef;
+$main_win_geometry = '1920x1015+0+0';

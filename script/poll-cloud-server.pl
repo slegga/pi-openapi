@@ -14,7 +14,11 @@ use Data::Dumper;
 
 =head1 NAME
 
-poll-cloud-serer.pl - Test status of cloud server.
+poll-cloud-server.pl - Test status of cloud server.
+
+=head1 DESCRIPTION
+
+Script for polling cloud server and for figure out if it is up or not.
 
 =cut
 
