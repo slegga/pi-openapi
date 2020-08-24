@@ -15,6 +15,10 @@ use Socket;
 
 push-ip-addr - Tell cloud server where which ip address the private pi server has.
 
+=head1 DESCRIPTION
+
+Script for telling which ip address my home router has, and the temperature of the pi server.
+
 =cut
 
 

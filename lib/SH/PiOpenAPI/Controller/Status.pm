@@ -6,10 +6,23 @@ use Mojo::Base "Mojolicious::Controller";
 SH::PiOpenAPI::Controller::Status - Think this is not in use.
 May be in future use with getting info from hjernen.
 
+=head1 SYNOPSIS
+
+    use SH::PiOpenAPI::Controller::Status;
+    sub startup {
+        my $self = shift;
+        get(/list)->to('status#list');
+    }
+
+=head1 DESCRIPTION
+
+Controller class for SH::PIOpenAPI.
+
 =head1 METHODS
 
 =head2 list
 
+TODO
 ...
 
 =cut
