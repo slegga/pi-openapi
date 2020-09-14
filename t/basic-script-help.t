@@ -7,7 +7,7 @@ use lib "$FindBin::Bin/../../utilities-perl/lib";
 use SH::UseLib;
 use Test::ScriptX;
 no warnings 'redefine';
-my $testscriptname = path($0)->basename;
+#my $testscriptname = path($0)->basename;
 for my $script (glob('script/*'),glob('bin/*')) { #$FindBin::Bin . '/../
     next if -d $script;
     next if ( $script !~ /\.pl$/ && $script !~ /^[^\.]+$/);
@@ -16,8 +16,8 @@ for my $script (glob('script/*'),glob('bin/*')) { #$FindBin::Bin . '/../
     my $t = Test::ScriptX->new($script);
     $t->run(help => 1);
     $t->stderr_ok;
-    my $b = path($0)->basename;
-    $t->stdout_like(qr/$b/);
+ #   my $b = path($0)->basename;
+    $t->stdout_like(qr/$script/);
 }
 ok(1,'Dummy'); # dummy testing in case no scripts
 done_testing;

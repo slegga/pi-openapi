@@ -31,7 +31,7 @@ python2perl.pl - Convert python code to perl code. Not accurate makes the job ea
 
 =head1 DESCRIPTION
 
-<DESCRIPTION>
+Produce to stdout perlversion of python module.
 
 =head1 ATTRIBUTES
 
@@ -50,12 +50,12 @@ sub main {
     my $self = shift;
     #my $python_code = path($e[0])->slurp;
     my $i=0;
-    my %varable_seen;
+    my %variable_seen;
+    my %sub_variable_seen;
     my %multilines;
-    my ($in_sub);
+    my ($in_sub,$in_init);
     my %keyword_change;
-    say "use Mojo::Base -base, -signatures;";
-    say "use Mojo::JSON 'encode_json';";
+    my $package_header='';
 
     my $old_indent='';
     while (my $l = $self->nextline ) { # <$ph>
@@ -79,12 +79,20 @@ sub main {
                 next;
             }
             elsif($l=~/^import requests/) {
-                say 'use Mojo::UserAgent;';
-                say 'has ua => sub {Mojo::UserAgent->new};';
+                $package_header .= "use Mojo::UserAgent;\n";
+                $package_header .= "use Mojo::URL;\n";
+                $package_header .= "has ua => sub {Mojo::UserAgent->new};\n";
                 my $t = $self->keyword_change;
-                $t->{requests} = {to=>'$self->{ua}',methods=>{
-                    get=>{to=>'get',pos=>{0=>'Mojo::URL->new($)'},keywords=>{'params'=>'->query($)'}},
-                    post=>{to=>'post',pos=>{0=>'Mojo::URL->new($)=>{Accept => \'*/*\'}'},keywords=>{'data'=>'=>form =>$'}}
+                $t->{requests} = {to=>'$self->ua',methods=>{
+                    get=>{
+                        to=>'get',pos=>{0=>'Mojo::URL->new($)'},
+                        keywords=>{'params'=>'->query($)'},
+                        ending => '->res->body',
+                    }, post=>{
+                        to=>'post',pos=>{0=>'Mojo::URL->new($)=>{Accept => \'*/*\'}'},
+                        keywords=>{'data'=>'=>form =>$'},
+                        ending => '->res->body',
+                    }
                 }};
                 $self->keyword_change($t);
                 next;
@@ -96,34 +104,63 @@ sub main {
                 }
             }
 
-            #TODO: indent
             $l=~/(\s*)(\S.*)/;
             $l= $2;
             my $indent=$1;
+            next if $in_init && $in_init<length($indent);
+            $in_init=0 if $in_init && $in_init>=length($indent);
+
             if (length($indent) <length($old_indent)) {
+                if ($in_init) {
+                    undef($in_init);
+                    $old_indent=$indent;
+                    next;
+                }
+
                 say $indent.'}';
             }
             if ($l =~/^\s*([a-zA-Z][\w]*)\s*=\s*None$/) {
                 my $key = $1;
-                say $indent.($varable_seen{$key}?'':'my ')."\$$key = undef;";
-                $varable_seen{$key}++;
+                if ($in_sub) {
+                    say $indent.($sub_variable_seen{$key}?'':'my ')."\$$key = undef;";
+                    $sub_variable_seen{$key}++;
+                } else {
+                    say $indent.($variable_seen{$key}?'':'my ')."\$$key = undef;";
+                    $variable_seen{$key}++;
+                }
             }
             elsif ($l =~/^\s*([a-zA-Z][\w]*)\s*=\s*(.+)$/) {
                 my ($key,$value) = ($1,$2);
                 $value = ($self->expression_get($value))[0];
-                say $indent.($varable_seen{$key}?'':'my ')."\$$key = $value".($value eq '{'?'':';');
-                $varable_seen{$key}++;
+                if ($in_sub) {
+                    say $indent.($sub_variable_seen{$key}?'':'my ')."\$$key = $value".($value eq '{'?'':';');
+                    $variable_seen{$key}++;
+                } else {
+                    say $indent.($variable_seen{$key}?'':'my ')."\$$key = $value".($value eq '{'?'':';');
+                    $variable_seen{$key}++;
+                }
                 if ($value eq '{') {
                     say $self->hash_get_rest;
                 }
             }
             elsif ($l =~ /^class\s+(\w+):/) {
                 say "package $1;";
+                say "use Mojo::Base -base, -signatures;";
+                say "use Mojo::JSON 'decode_json';";
+                say $package_header;
             }
             elsif ($l =~ /\s*"""(.*)/) {
                 $multilines{'"""'}=1;
                 say "=head2 $1";
             }
+            elsif ($l =~ /^\s*def\s+__init__(.*):/) {
+                my $input = $1;
+                $input =~ s/^\(//;
+                $input =~ s/\)$//;
+                say "has '$_';" for split /\s*,\s*/, $input;
+                $in_init=length($indent);
+            }
+
             elsif ($l =~ /^\s*def\s+([\w_]+)(.*):/) {
                 my ($proc,$input) = ($1,$2);
 #                say "}" if $in_sub;
@@ -131,15 +168,20 @@ sub main {
                 say "sub $proc ".$self->inputs_get($input)."{";
                 ;
                 $in_sub=1;
+                %sub_variable_seen=();
             }
             elsif ($l =~ /^\s*(\w+)\.(\w+)\s*=\s*(\w+)$/) {
                 print "\t" if $in_sub;
                 say $indent."\$$1\->$2(\$$3);";
             }
             elsif ($l =~ /for (\w+) in (\w+)\s*:/ ){
-                say $indent."for my \$$1(\@\$$2) {";
+                if ($1 eq 'key') {
+                    say $indent."for my \$$1(keys \%\$$2) {";
+                } else {
+                    say $indent."for my \$$1(\@\$$2) {";
+                }
             }
-            elsif ($l =~/(\w+)\[(\w+)\]\s*=\s*(\w+)\[(\w+)\]/ ) { # data[key] = options[key]
+            elsif ($l =~/(\w+)\[([\w\'\"]+)\]\s*=\s*(\w+)\[(\w+)\]/ ) { # data[key] = options[key]
                 say $indent."\$$1\->{\$$2} = \$$3\->{\$$4};";
             }
             elsif ( $l =~ /^\s*(if|elif)\s*(\w+)\s*==\s*(.+)\s*:/ ) { #if type == "GET":
@@ -161,6 +203,8 @@ sub main {
             $old_indent=$indent;
         }
     }
+    say '}';
+    say '1';
 }
 
 sub nextline {
@@ -177,6 +221,7 @@ sub nextline {
 sub inputs_get {
     my ($self, $input) = @_;
     $input =~ s/([\(,]\s*)([\w])/$1\$$2/g;
+    $input =~ s/dict\(\)/{}/g;
     return $input;
 }
 
@@ -184,14 +229,18 @@ sub args_list_get {
     my ($self, $list) = @_;
     my $return = '';
     my $i=0;
+    return '' if ! $list;
     for my $x(split(/\,/,$list)) {
 
         $x =~ s/^\s*//;
         $x =~ s/^\w+\=//;
-        $return = ($i?', ':''). ($self->expression_get($x))[0];
+        if ($x eq 'dict()') {
+            $x='{}';
+        }
+        $return .= ($i?', ':''). ($self->expression_get($x))[0];
         $i++;
     }
-    ...;
+    return $return;
 }
 
 sub list_get {
@@ -261,20 +310,28 @@ sub part_get {
     if ($part =~ (/^\w/)) {
         my $return = '$'.$part;
         $return =~ s/\./->/;
-        if ($part !~/\(/) {
+        if ($part !~/[\(\[]/) {
             return ($return,$extra);
         }
         if ($part =~/\(\)\s*$/) {
             if ($part=~/(\w+)\.json\(\)\s*/) {
-                return 'encode_json('.($self->expression_get($1))[0].')';
+                return 'decode_json('.($self->expression_get($1))[0].')';
             }
             return ($return,$extra);
         }
 
-        if ($part =~/(.*)(\((.+)\))/) {
+        if ($part =~/(.*)\((.+)\)/) {
             my $first = $1;
-            my $param_list = $3;
-            $return = $first .'(' .$self->args_list_get($param_list).')';
+            my $param_list = $2;
+            $first=~ s/\./\-\>/g;
+            $return = '$'.$first .'(' .$self->args_list_get($param_list).')';
+            return ($return, $extra);
+        }
+
+        # $ret_data['console']
+        if ($part =~ /^(.+)\[(.+)\]/) {
+            my ($pre,$hkey) = ($1,$2);
+            $return = $pre.'{'.($self->part_get($hkey))[0].'};';
             return ($return, $extra);
         }
         warn $return;
@@ -324,7 +381,9 @@ sub part_get {
                     }
                     $i++;
                 }
+
                 $return .= ')';
+                $return .= $method_data->{ending} if $method_data->{ending};
             } else {
                 die "Unknown method $key.$method valid is " . join(',', keys %{$self->keyword_change->{$key}->{methods} });
             }
