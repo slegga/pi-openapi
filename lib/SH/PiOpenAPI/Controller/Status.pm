@@ -11,7 +11,7 @@ May be in future use with getting info from hjernen.
     use SH::PiOpenAPI::Controller::Status;
     sub startup {
         my $self = shift;
-        get(/list)->to('status#list');
+        get('/list')->to('status#list');
     }
 
 =head1 DESCRIPTION
