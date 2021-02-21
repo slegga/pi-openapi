@@ -9,6 +9,7 @@ use Data::Dumper;
 use POSIX qw (strftime);
 use Mojo::JSON qw(j);
 use Mojo::UserAgent;
+use Mojo::Date;
 use Clone 'clone';
 use Socket;
 =head1 NAME
@@ -52,7 +53,8 @@ if ($uname=~/raspb/i) {
     $cels =`sensors`;
   ($value_hr->{a_temp}) = ($cels=~/temp1\:\s+([\d\.\,\w\-\+]+)/);
 }
-$value_hr->{a_time} = strftime("%Y-%m-%d %H:%M:%S", localtime);
+$value_hr->{a_time} = Mojo::Date->new->to_datetime;
+#strftime("%Y-%m-%d %H:%M:%S", localtime);
 
 
 printf j( $value_hr);
