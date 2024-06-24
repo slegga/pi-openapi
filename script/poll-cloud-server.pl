@@ -43,16 +43,16 @@ if ($socket) {
             $ok = 1;
         }
         else {
-            say time . ' ERROR: Connected but expect SSH got:' . $line;
+            say STDERR time . ' ERROR: Connected but expect SSH got:' . $line;
         }
     }
     else {
-        say time . ' ERROR: Connected but no answear';
+        say STDERR time . ' ERROR: Connected but no answear';
     }
 }
 
 else {
-    printf "%s ERROR: unreachable '%s' %s:%s\n", time, $@, $cfg->{PeerAddr}, $cfg->{PeerPort};
+    printf STDERR "%s ERROR: unreachable '%s' %s:%s\n", time, $@, $cfg->{PeerAddr}, $cfg->{PeerPort};
 
     # https://github.com/cloudatcost/api
 }
