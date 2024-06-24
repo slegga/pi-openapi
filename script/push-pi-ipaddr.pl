@@ -74,6 +74,8 @@ if ($res->is_success) {
 }
 else {
     my ($err, $code) = $tx->error;
-    say $code ? "$code response: $err" : "Connection error:" . Dumper $err;
+    my $msg = $code ? "$code response: $err" : "Connection error:" . j($err);
+    say STDERR $msg;
+    say $msg;
 }
 
